@@ -111,7 +111,7 @@ gc_iter = 5          # GRABCUT ALGORITHM ITERATIONS
 show_input = False   # SHOWING INPUT IMAGES
 show_details = False # CONTOUR AND CENTER
 row_length = 9       # NUMBER OF PICTURES IN ONE ROW
-save = True         # SAVES IMAGES IN PATH\ZROBIONE IF TRUE
+save = False         # SAVES IMAGES IN PATH\ZROBIONE IF TRUE
 bw = False           # BLACK AND WHITE IMAGES IF TRUE
 
 w_offset, h_offset = int(w/9), int(h/7)
