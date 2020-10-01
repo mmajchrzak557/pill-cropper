@@ -125,75 +125,75 @@ for i in range(n):
     print(path)
     #print(str(round(i/n*100)) + '%')
     image = cv2.imread(path)
-    new_size = (int(image.shape[1]/8), int(image.shape[0]/8))
-    image = cv2.resize(image, new_size)
-    # image = crop(image, w, h)
-    # input_image = image.copy()
-    # original = image.copy()
+    #new_size = (int(image.shape[1]/8), int(image.shape[0]/8))
+    #image = cv2.resize(image, new_size)
+    image = crop(image, w, h)
+    input_image = image.copy()
+    original = image.copy()
        
     # ADAPTIVE THRESHOLD FOR IMPROVING GRABCUT
-    # ad_thresh = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2GRAY)
-    # ad_thresh = cv2.adaptiveThreshold(ad_thresh,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-    #         cv2.THRESH_BINARY,21,5)
-    # kernel = np.ones((5, 5), np.uint8)   
-    # t_mask = cv2.erode(ad_thresh, kernel, iterations = 2)
-    # t_mask = cv2.dilate(t_mask, kernel, iterations = 1)
+    ad_thresh = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2GRAY)
+    ad_thresh = cv2.adaptiveThreshold(ad_thresh,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+            cv2.THRESH_BINARY,21,5)
+    kernel = np.ones((5, 5), np.uint8)   
+    t_mask = cv2.erode(ad_thresh, kernel, iterations = 2)
+    t_mask = cv2.dilate(t_mask, kernel, iterations = 1)
     
-    # # GRABCUT
-    # gc_mask = np.zeros(image.shape[:2], np.uint8)
-    # bgdModel = np.zeros((1,65), np.float64)
-    # fgdModel = np.zeros((1,65), np.float64)
-    # rect = (w_offset, h_offset, w - 2*w_offset, h - 2*h_offset)
-    # cv2.grabCut(image.copy(), gc_mask, rect, bgdModel, fgdModel, gc_iter, cv2.GC_INIT_WITH_RECT)
-    # gc_mask2 = np.where((gc_mask == 2)|(gc_mask == 0), 0 ,1).astype('uint8')
-    # image = image*gc_mask2[:, :, np.newaxis]
-    # if cv2.countNonZero(t_mask) > 0 and 'Miflonide_Breezhaler' not in filenames[i%2]:
-    #     image = improve_grabcut(image, gc_mask, t_mask, bgdModel, fgdModel)
+    # GRABCUT
+    gc_mask = np.zeros(image.shape[:2], np.uint8)
+    bgdModel = np.zeros((1,65), np.float64)
+    fgdModel = np.zeros((1,65), np.float64)
+    rect = (w_offset, h_offset, w - 2*w_offset, h - 2*h_offset)
+    cv2.grabCut(image.copy(), gc_mask, rect, bgdModel, fgdModel, gc_iter, cv2.GC_INIT_WITH_RECT)
+    gc_mask2 = np.where((gc_mask == 2)|(gc_mask == 0), 0 ,1).astype('uint8')
+    image = image*gc_mask2[:, :, np.newaxis]
+    if cv2.countNonZero(t_mask) > 0 and 'Miflonide_Breezhaler' not in filenames[i%2]:
+        image = improve_grabcut(image, gc_mask, t_mask, bgdModel, fgdModel)
         
-    # # THRESHOLD, EROSION AND DILATION
-    # mask = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # mask = cv2.threshold(mask, 15, 255, cv2.THRESH_BINARY)[1]
-    # kernel = np.ones((3, 3), np.uint8)
-    # mask = cv2.erode(mask, kernel, iterations = 2)
-    # mask = cv2.dilate(mask, kernel, iterations = 1)
-    # image = cv2.bitwise_and(image, image, mask = mask)
-    # c, a, is_circle = get_rotation(mask, input_image, True)
-    # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # THRESHOLD, EROSION AND DILATION
+    mask = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    mask = cv2.threshold(mask, 15, 255, cv2.THRESH_BINARY)[1]
+    kernel = np.ones((3, 3), np.uint8)
+    mask = cv2.erode(mask, kernel, iterations = 2)
+    mask = cv2.dilate(mask, kernel, iterations = 1)
+    image = cv2.bitwise_and(image, image, mask = mask)
+    c, a, is_circle = get_rotation(mask, input_image, True)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
-    # # DRAW GRABCUT RECTANGLE ON INPUT IMAGE
-    # if show_input and show_details:
-    #     cv2.rectangle(input_image, (w_offset, h_offset),
-    #                   (w - w_offset, h - h_offset), [0, 0, 255], thickness = 2)
-    #     draw_contour(mask.copy(), input_image)
+    # DRAW GRABCUT RECTANGLE ON INPUT IMAGE
+    if show_input and show_details:
+        cv2.rectangle(input_image, (w_offset, h_offset),
+                      (w - w_offset, h - h_offset), [0, 0, 255], thickness = 2)
+        draw_contour(mask.copy(), input_image)
            
-    # # HOUGH CIRCLES AND MASK
-    # changed = False
-    # if is_circle:
-    #     circ_mask = find_circle(image)
-    #     np.uint8(image)
-    #     if not is_empty(image, 0.025):
-    #         image = cv2.bitwise_and(image, image, mask = circ_mask)
-    #         changed = True
+    # HOUGH CIRCLES AND MASK
+    changed = False
+    if is_circle:
+        circ_mask = find_circle(image)
+        np.uint8(image)
+        if not is_empty(image, 0.025):
+            image = cv2.bitwise_and(image, image, mask = circ_mask)
+            changed = True
     
-    # # GET COLOR IMAGE
-    # if not bw:
-    #     final_mask = cv2.threshold(image, 5, 255, cv2.THRESH_BINARY)[1]    
-    #     image = cv2.bitwise_and(original, original, mask = final_mask)
+    # GET COLOR IMAGE
+    if not bw:
+        final_mask = cv2.threshold(image, 5, 255, cv2.THRESH_BINARY)[1]    
+        image = cv2.bitwise_and(original, original, mask = final_mask)
     
-    # # ROTATE AND SHIFT TO CENTER + GREYSCALE
-    # mask = circ_mask if changed else mask
-    # center, angle, ic = get_rotation(mask, input_image)
-    # x = int(image.shape[1]/2) - center[0]
-    # y = int(image.shape[0]/2) - center[1]
-    # translation_matrix = np.float32([[1, 0, x], [0, 1, y]])   
-    # image = cv2.warpAffine(image, translation_matrix, (w, h))
-    # image = rotate_image(image, angle)
+    # ROTATE AND SHIFT TO CENTER + GREYSCALE
+    mask = circ_mask if changed else mask
+    center, angle, ic = get_rotation(mask, input_image)
+    x = int(image.shape[1]/2) - center[0]
+    y = int(image.shape[0]/2) - center[1]
+    translation_matrix = np.float32([[1, 0, x], [0, 1, y]])   
+    image = cv2.warpAffine(image, translation_matrix, (w, h))
+    image = rotate_image(image, angle)
     
-    # # CROP AND RESIZE
-    # #image = crop(image, 130, 130)
-    # #image = cv2.resize(image, (28, 28))
-    # #print(image.shape)
-    # #image = cv2.resize(image, (w, h))
+    # CROP AND RESIZE
+    #image = crop(image, 130, 130)
+    #image = cv2.resize(image, (28, 28))
+    #print(image.shape)
+    #image = cv2.resize(image, (w, h))
     
     # ADD TO OUTPUT
     if not save:
@@ -209,7 +209,7 @@ for i in range(n):
     else:
         #folder = filenames[i%2][:-8]
         #save_path = '%s\\zrobione\\%s\\%s' % (os.getcwd(), folder, filenames[i])
-        save_path = '%s\\sm\\%s' % (os.getcwd(), filenames[i])
+        save_path = '%s\\sm\\%s' % (os.getcwd(), filenames[i%2])
         cv2.imwrite(save_path, image)
 
 time = round((time.time() - start_time), 2)
