@@ -1,1 +1,1 @@
-"#Demo" 
+The script crops out pills out of images with GrabCut algorithm included in opencv library. If the pills are longitudinal they are rotated to vertical or horizontal position. In current form the script will cut the pills out of 18 images from "demo" folder and display them without saving. 
